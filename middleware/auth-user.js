@@ -1,25 +1,25 @@
 'use-strict';
 const auth = require('basic-auth');
 const { User } = require('../models');
+const bcrypt = require('bcrypt');
 
 exports.authenticateUser = async(req, res, next) => {
     let message;
     const credentials = auth(req);
-    console.log(credentials);
 
     if (credentials) {
-        const user = await User.findOne({where: {emailAddress: credentials.name, password: credentials.pass}})
+        const user = await User.findOne({where: {emailAddress: credentials.name}})
         if (user) {
+            const authenticated = bcrypt.compareSync(credentials.pass, user.password);
+            if (authenticated) {
+                // console.log(`Congrats ${user.emailAddress}, you've logged in!`)
             req.currentUser = user;
             req.currentUserId = user.id;
-            // if (password === credentials.password) {
-            //     consolee.log(`Congrats ${user.emailAddress}, you've logged in!`)
-            // req.currentUser = user;
-            // } else {
-            //     message = `Authentication failed for user ${user.emailAddress}`
-            // }
-        // } else {
-        //     message = `User not found for email: ${user.emailAddress}`
+            } else {
+                message = `Authentication failed for user ${user.emailAddress}`
+            }
+        } else {
+            message = `User not found for email: ${credentials.name}`;    
     } 
     } else {
         message = 'Auth header not found';
@@ -27,6 +27,7 @@ exports.authenticateUser = async(req, res, next) => {
 
     if (message) {
         console.warn(message);
+        console.log(message);
         res.status(401).json({message: 'Access Denied'});
     } else {
     next();

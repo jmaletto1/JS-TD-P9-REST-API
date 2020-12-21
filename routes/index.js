@@ -27,13 +27,14 @@ router.get('/', (req, res) => {
 // View Users Route
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
     const user = req.currentUser;
-    res.location='/';
-    res.send(201, null);
+    res.status(201);
+    res.json({msg: `Welcome, ${user.firstName} ${user.lastName}`})
 }))
 
 // Create User Route
 router.post('/users', asyncHandler(async(req, res) => {
     console.log(req.body)
+    if (req.body.confirmedPassword === req.body.password) {
     try {
         await User.create(req.body);
         res.status(201).json({"message": "User created!"});
@@ -47,6 +48,9 @@ router.post('/users', asyncHandler(async(req, res) => {
                 throw error;
             }
         }
+    } else {
+        res.json({msg: "Please make sure your passwords match!"})
+    }
     }
     ))
 
@@ -88,6 +92,7 @@ router.get('/courses/:id', asyncHandler(async(req, res) => {
     }
 }))
 
+// Create new Courses Route
 router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
     let courseEntry;
     try {
@@ -104,7 +109,7 @@ router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
     } catch(error) {
         console.log('Error man!'), error.name;
 
-        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+        if (error.name === 'SequelizeValidationError') {
             const errors = error.errors.map(err => err.message);
             res.status(400).json({errors}) 
         } else {
@@ -119,6 +124,9 @@ router.post('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
     let courseEntry;
     try {
         courseEntry = await Course.findByPk(req.params.id);
+        if (req.currentUserId !== courseEntry.userId) {
+            res.status(403).json({msg: "You are not the owner of this route! Be gone!"})
+        }
         if (courseEntry) {
             await courseEntry.update({
                 title: req.body.title,
@@ -128,12 +136,12 @@ router.post('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
             });
             res.status(204).end();
         } else {
-            res.status(404).json("Not found man!")
+            res.status(404).json("This route does not exist!")
         }
     } catch(error) {
-        console.log('Error man!'), error.name;
+        console.log('There seems to have been an error!'), error.name;
 
-        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+        if (error.name === 'SequelizeValidationError') {
             const errors = error.errors.map(err => err.message);
             res.status(400).json({errors}) 
         } else {
@@ -145,8 +153,12 @@ router.post('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
 // Delete Course Route
 router.post('/courses/:id/delete', authenticateUser, asyncHandler(async(req, res) => {
     const course = await Course.findByPk(req.params.id);
-    await course.destroy();
-    res.status(204).end();
+    if (req.currentUserId === course.userId) {
+        await course.destroy();
+        res.status(204).end();
+    } else {
+        res.status(400).json({msg: "I'm afraid you are not the owner of this course! Therefore you cannot delete it."})
+    }
 }))
 
 module.exports = router;
