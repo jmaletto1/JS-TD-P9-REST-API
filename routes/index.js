@@ -120,7 +120,7 @@ router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
     ))
 
 // Update Course Route
-router.post('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
+router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
     let courseEntry;
     try {
         courseEntry = await Course.findByPk(req.params.id);
