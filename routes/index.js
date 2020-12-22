@@ -66,7 +66,17 @@ router.get('/courses', asyncHandler(async(req, res) => {
                 },
             ],
         })
-        res.status(200).json(courses.map(item => item.get({plain: true})))
+        res.status(200)
+            const courseData = courses.map((data) => ({
+                    "Course Title": data.title,
+                    "Id Number": data.id,
+                    "Description": data.description,
+                    "Estimated Time to Completion": data.estimatedTime,
+                    "Materials Required": data.materialsNeeded,
+                    "Course Owner": data.courseOwner.firstName + " " + data.courseOwner.lastName,
+                    "Contact E-mail": data.courseOwner.emailAddress
+            }))
+            res.json(courseData);
     } catch(error) {
         console.log(error);
     }
@@ -87,7 +97,17 @@ router.get('/courses/:id', asyncHandler(async(req, res) => {
             ]
         })
         if (course) {
-        res.json(course);
+        res.json({
+            id: course.id,
+            title: course.title,
+            description: course.description,
+            estimatedTime: course.estimatedTime,
+            materialsNeeded: course.materialsNeeded,
+            courseOwner: {
+                firstName: course.courseOwner.firstName,
+                lastName: course.courseOwner.lastName
+            }
+        });
         } else {
             res.status(404).json({msg: "This course cannot be found!"})
         }
