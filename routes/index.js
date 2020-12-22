@@ -9,17 +9,6 @@ const { asyncHandler} = require('../middleware/async-handler')
 
 router.use(bodyParser.json());
 
-// asyncHandler Middleware function
-// function asyncHandler(cb) {
-//     return async (req, res, next) => {
-//         try {
-//             await cb(req, res, next);
-//         } catch(error) {
-//             next(error);
-//         }
-//         }
-//     }
-
 // View Users Route
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
     const user = req.currentUser;
