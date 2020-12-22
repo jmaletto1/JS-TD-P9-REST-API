@@ -1,3 +1,5 @@
+// Import the necessary requirements.
+
 let express = require('express');
 let router = express.Router();
 let bodyParser = require('body-parser')
@@ -7,9 +9,10 @@ const { Op } = require('sequelize');
 const { authenticateUser } = require('../middleware/auth-user');
 const { asyncHandler} = require('../middleware/async-handler')
 
+// Set up bodyParser, so that the request parameters object can be accessed (for req.params.id)
 router.use(bodyParser.json());
 
-// View Users Route
+// View Users Route. This allows the user to view their account details.
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
     const user = req.currentUser;
     res.status(201);
@@ -21,7 +24,7 @@ router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
     });
 }))
 
-// Create User Route
+// Create User Route. This allows an unregistered user to create an account.
 router.post('/users', asyncHandler(async(req, res) => {
     console.log(req.body)
     if (req.body.confirmedPassword === req.body.password) {
@@ -44,7 +47,7 @@ router.post('/users', asyncHandler(async(req, res) => {
     }
     ))
 
-// View All Courses Route
+// View All Courses Route. This displays a certain set of information on each course.
 router.get('/courses', asyncHandler(async(req, res) => {
     try {
         const courses = await Course.findAll({
@@ -71,7 +74,7 @@ router.get('/courses', asyncHandler(async(req, res) => {
     }
 }))
 
-// View Individual Course Route
+// View Individual Course Route. This displays a certain set of information on the specified course.
 router.get('/courses/:id', asyncHandler(async(req, res) => {
     const courseId = req.params.id;
     console.log(courseId);
@@ -105,7 +108,7 @@ router.get('/courses/:id', asyncHandler(async(req, res) => {
     }
 }))
 
-// Create new Courses Route
+// Create new Courses Route. This allows a user to create a new course.
 router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
     let courseEntry;
     try {
@@ -132,7 +135,8 @@ router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
     }
     ))
 
-// Update Course Route
+/* Update Course Route. This allows an authenticated user to update one of their courses.
+If the course is not their own, or does not exist, an error will be thrown. */
 router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
     let courseEntry;
     if (!req.body.title) {
@@ -172,7 +176,8 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
         }
  }))
 
-// Delete Course Route
+/* Delete Course Route. This route allows a user to delete a course. If they do 
+not own the requested course, an error will be thrown. */
 router.delete('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
     const course = await Course.findByPk(req.params.id);
     if (req.currentUserId === course.userId) {

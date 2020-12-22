@@ -1,15 +1,14 @@
 'use strict';
 const {Model, Sequelize} = require('sequelize');
-// const { Sequelize } = require('../../JS-TD-P8-SQL-Library-Manager/models');
 
+/*
+Set the Course model. This includes the fields title, description, estimatedTime
+and materialsNeeded. A "belongsTo" association is also registered to the User
+Model.
+*/
 module.exports = (sequelize) => {
     class Course extends Sequelize.Model {}
         Course.init({
-            // id: {
-            //     type: Sequelize.INTEGER,
-            //     autoIncrement: true,
-            //     primaryKey: true
-            // },
             title: {
                 type: Sequelize.STRING,
                 allowNull: false,

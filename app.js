@@ -21,7 +21,9 @@ app.use(morgan('dev'));
 let indexRouter = require('./routes/index')
 app.use('/api', indexRouter)
 
-// Test Database Connection
+/* Test Database Connection. Return a success or failure message, 
+depending on whether the database connection was successful.
+*/
 app.get('/', async(req, res) => {
   await sequelize.sync()
   try {

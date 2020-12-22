@@ -2,6 +2,11 @@
 const {Model, Sequelize} = require('sequelize');
 const bcrypt = require('bcrypt');
 
+/*
+Set the User model. This includes the fields firstName, lastName, emailAddress,
+password and confirmedPassword. A "hasMany" association is also registered to the Courses
+Model.
+*/
 module.exports = (sequelize) => {
     class User extends Sequelize.Model {}
     User.init({

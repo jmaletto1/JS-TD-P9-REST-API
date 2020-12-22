@@ -3,6 +3,7 @@ const auth = require('basic-auth');
 const { User } = require('../models');
 const bcrypt = require('bcrypt');
 
+// Authenticate User Function
 exports.authenticateUser = async(req, res, next) => {
     let message;
     const credentials = auth(req);
@@ -12,7 +13,6 @@ exports.authenticateUser = async(req, res, next) => {
         if (user) {
             const authenticated = bcrypt.compareSync(credentials.pass, user.password);
             if (authenticated) {
-                // console.log(`Congrats ${user.emailAddress}, you've logged in!`)
             req.currentUser = user;
             req.currentUserId = user.id;
             } else {
