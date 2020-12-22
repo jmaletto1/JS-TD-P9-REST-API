@@ -5,30 +5,31 @@ const User = require('../models').User;
 const Course = require('../models').Course;
 const { Op } = require('sequelize');
 const { authenticateUser } = require('../middleware/auth-user');
+const { asyncHandler} = require('../middleware/async-handler')
 
 router.use(bodyParser.json());
 
 // asyncHandler Middleware function
-function asyncHandler(cb) {
-    return async (req, res, next) => {
-        try {
-            await cb(req, res, next);
-        } catch(error) {
-            next(error);
-        }
-        }
-    }
-
-router.get('/', (req, res) => {
-    res.json({message: "Hi MAN"});
-    res.status(201);
-})
+// function asyncHandler(cb) {
+//     return async (req, res, next) => {
+//         try {
+//             await cb(req, res, next);
+//         } catch(error) {
+//             next(error);
+//         }
+//         }
+//     }
 
 // View Users Route
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
     const user = req.currentUser;
     res.status(201);
-    res.json({msg: `Welcome, ${user.firstName} ${user.lastName}`})
+    res.json({
+        "id": user.id,
+        "First Name": user.firstName,
+        "Last Name": user.lastName,
+        "Email Address": user.emailAddress
+    });
 }))
 
 // Create User Route
@@ -85,8 +86,11 @@ router.get('/courses/:id', asyncHandler(async(req, res) => {
                 },
             ]
         })
-
+        if (course) {
         res.json(course);
+        } else {
+            res.status(404).json({msg: "This course cannot be found!"})
+        }
     } catch(error) {
         console.log("no good");
     }
@@ -122,8 +126,17 @@ router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
 // Update Course Route
 router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
     let courseEntry;
+    if (!req.body.title) {
+        res.status(400).json({msg: "Please be sure to provide a valid title!"})
+    } 
+    if (!req.body.description) {
+        res.status(400).json({msg: "Please be sure to provide a valid description!"})
+    }
     try {
         courseEntry = await Course.findByPk(req.params.id);
+        if (!courseEntry) {
+            res.status(404).json({msg: "Unfortunately you have visited a course that no longer exists! Hot diggity."})
+        }
         if (req.currentUserId !== courseEntry.userId) {
             res.status(403).json({msg: "You are not the owner of this route! Be gone!"})
         }
@@ -151,7 +164,7 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
  }))
 
 // Delete Course Route
-router.post('/courses/:id/delete', authenticateUser, asyncHandler(async(req, res) => {
+router.delete('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
     const course = await Course.findByPk(req.params.id);
     if (req.currentUserId === course.userId) {
         await course.destroy();

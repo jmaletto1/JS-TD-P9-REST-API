@@ -22,15 +22,14 @@ let indexRouter = require('./routes/index')
 app.use('/api', indexRouter)
 
 // Test Database Connection
-// app.get('/', async(req, res) => {
-//   await sequelize.sync()
-//   try {
-//     res.json({message: "HI"});
-//     console.log("Connection successful!")
-//   } catch (error) {
-//     console.error('Error connecting to the database: ', error);
-//   }
-// })
+app.get('/', async(req, res) => {
+  await sequelize.sync()
+  try {
+    console.log("Connection successful!")
+  } catch (error) {
+    console.error('Error connecting to the database: ', error);
+  }
+})
 
 // send 404 if no other route matched
 app.use((req, res) => {
