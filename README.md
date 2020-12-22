@@ -46,7 +46,7 @@ do attempt to do so, an error message is provided.
 
 The bulk of the back-end for this project has been delivered in 3 folders - Models, Routes and Middleware.
 
-As well as Index file, which initialises the Database connection, the folder also contains both a User and Courses model.
+As well as an Index file, which initialises the Database connection, the folder also contains both a User and Courses model.
 These models define how Sequelize communicates with the database file (fsjstd-restapi.db). Each model calls the .init() 
 method to initialise the model, and then describes the various data types that will be present in each row of the table.
 Validation such as allowNull, notEmpty and notNull are provided for a large number of these data types. In addition,
