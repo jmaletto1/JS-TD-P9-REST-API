@@ -27,10 +27,10 @@ router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
 // Create User Route. This allows an unregistered user to create an account.
 router.post('/users', asyncHandler(async(req, res) => {
     console.log(req.body)
-    if (req.body.confirmedPassword === req.body.password) {
     try {
         await User.create(req.body);
-        res.status(201).json({"message": "User created!"});
+        res.location('/');
+        res.status(201).end();
     } catch(error) {
         console.log('Error man!'), error.name;
 
@@ -41,11 +41,8 @@ router.post('/users', asyncHandler(async(req, res) => {
                 throw error;
             }
         }
-    } else {
-        res.json({msg: "Please make sure your passwords match!"})
     }
-    }
-    ))
+))
 
 // View All Courses Route. This displays a certain set of information on each course.
 router.get('/courses', asyncHandler(async(req, res) => {
@@ -65,7 +62,8 @@ router.get('/courses', asyncHandler(async(req, res) => {
                     "Description": data.description,
                     "Estimated Time to Completion": data.estimatedTime,
                     "Materials Required": data.materialsNeeded,
-                    "Course Owner": data.courseOwner.firstName + " " + data.courseOwner.lastName,
+                    "First Name": data.courseOwner.firstName,
+                    "Last Name":  data.courseOwner.lastName,
                     "Contact E-mail": data.courseOwner.emailAddress
             }))
             res.json(courseData);
@@ -97,7 +95,8 @@ router.get('/courses/:id', asyncHandler(async(req, res) => {
             materialsNeeded: course.materialsNeeded,
             courseOwner: {
                 firstName: course.courseOwner.firstName,
-                lastName: course.courseOwner.lastName
+                lastName: course.courseOwner.lastName,
+                email: course.courseOwner.emailAddress
             }
         });
         } else {
@@ -120,8 +119,8 @@ router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
             userId: req.currentUserId
         });
         res.status(201);
-        res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify(courseEntry))
+        res.location(`/courses/${courseEntry.id}`)
+        res.end()
     } catch(error) {
         console.log('Error man!'), error.name;
 

@@ -37,8 +37,8 @@ module.exports = (sequelize) => {
                 isEmail: {msg: "Please enter a valid email address."}            
             }
         },
-        confirmedPassword: {
-            type: Sequelize.VIRTUAL,
+        password: {
+            type: Sequelize.STRING,
             allowNull: false,
             validate: {
                 notNull: {
@@ -50,22 +50,26 @@ module.exports = (sequelize) => {
                 len: {
                     args: [8, 20],
                     msg: "Your password needs to be between 8 and 20 characters!"
-                }
-            }
-        },
-        password: {
-            type: Sequelize.STRING,
-            allowNull: false,
-            set(val) {
-                if (val === this.confirmedPassword) {
+                },
+                set(val) {
                     const hashedPassword = bcrypt.hashSync(val, 10);
-                    this.setDataValue('password', hashedPassword);
-                }
-            },
-                notNull: {
-                    msg: "Both passwords must match!"
+                    this.setDataValue('password', hashedPassword)
                 }
             }
+        }
+        // confirmedPassword: {
+        //     type: Sequelize.STRING,
+        //     allowNull: false,
+        //     set(val) {
+        //         if (val === this.password) {
+        //             const hashedPassword = bcrypt.hashSync(val, 10);
+        //             this.setDataValue('confirmedPassword', hashedPassword);
+        //         }
+        //     },
+        //         notNull: {
+        //             msg: "Both passwords must match!"
+        //         }
+        //     }
     }, {sequelize});
 
     User.associate = (models) => {
