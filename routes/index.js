@@ -68,14 +68,14 @@ router.get(
       });
       res.status(200);
       const courseData = courses.map((data) => ({
-        "Course Title": data.title,
-        "Id Number": data.id,
-        Description: data.description,
-        "Estimated Time to Completion": data.estimatedTime,
-        "Materials Required": data.materialsNeeded,
-        "First Name": data.courseOwner.firstName,
-        "Last Name": data.courseOwner.lastName,
-        "Contact E-mail": data.courseOwner.emailAddress,
+        title: data.title,
+        id: data.id,
+        description: data.description,
+        estimatedTime: data.estimatedTime,
+        materialsNeeded: data.materialsNeeded,
+        firstName: data.courseOwner.firstName,
+        lastName: data.courseOwner.lastName,
+        email: data.courseOwner.emailAddress,
       }));
       res.json(courseData);
     } catch (error) {
@@ -111,6 +111,7 @@ router.get(
             firstName: course.courseOwner.firstName,
             lastName: course.courseOwner.lastName,
             email: course.courseOwner.emailAddress,
+            ownerId: course.courseOwner.id,
           },
         });
       } else {
@@ -159,14 +160,14 @@ router.put(
   authenticateUser,
   asyncHandler(async (req, res) => {
     let courseEntry;
-    if (!req.body.title) {
-      res.status(400).json({ msg: "Please be sure to provide a valid title!" });
-    }
-    if (!req.body.description) {
-      res
-        .status(400)
-        .json({ msg: "Please be sure to provide a valid description!" });
-    }
+    // if (!req.body.title) {
+    //   res.status(400).json({ msg: "Please be sure to provide a valid title!" });
+    // }
+    // if (!req.body.description) {
+    //   res
+    //     .status(400)
+    //     .json({ msg: "Please be sure to provide a valid description!" });
+    // }
     try {
       courseEntry = await Course.findByPk(req.params.id);
       if (!courseEntry) {
