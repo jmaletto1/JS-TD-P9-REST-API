@@ -1,6 +1,7 @@
 "use strict";
 
 // load modules
+const cors = require("cors");
 const express = require("express");
 const morgan = require("morgan");
 
@@ -14,6 +15,9 @@ const enableGlobalErrorLogging =
 
 // create the Express app
 const app = express();
+
+// Allow all CORS requests
+app.use(cors());
 
 // setup morgan which gives us http request logging
 app.use(morgan("dev"));
