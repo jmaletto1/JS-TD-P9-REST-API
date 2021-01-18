@@ -160,14 +160,14 @@ router.put(
   authenticateUser,
   asyncHandler(async (req, res) => {
     let courseEntry;
-    if (!req.body.title) {
-      res.status(400).json({ msg: "Please be sure to provide a valid title!" });
-    }
-    if (!req.body.description) {
-      res
-        .status(400)
-        .json({ msg: "Please be sure to provide a valid description!" });
-    }
+    // if (!req.body.title) {
+    //   res.status(400).json({ msg: "Please be sure to provide a valid title!" });
+    // }
+    // if (!req.body.description) {
+    //   res
+    //     .status(400)
+    //     .json({ msg: "Please be sure to provide a valid description!" });
+    // }
     try {
       courseEntry = await Course.findByPk(req.params.id);
       if (!courseEntry) {
